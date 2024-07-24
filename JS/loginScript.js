@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function(){
     const passVisibilityButtons = document.querySelectorAll('.pass-visibility');
-
+    const signIn = document.querySelector('.sign-in');
+    
     passVisibilityButtons.forEach((button) => {
         button.addEventListener('click', (e) => {
             const input = button.previousElementSibling;
@@ -14,5 +15,9 @@ document.addEventListener('DOMContentLoaded', function(){
                 icon.classList.replace('fa-eye', 'fa-eye-slash');
             }
         });
+    });
+
+    signIn.addEventListener('click', () => {
+        window.location.href = 'Dashboard.html';
     });
 });
