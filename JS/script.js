@@ -1,3 +1,17 @@
+// for whole document
+document.addEventListener('DOMContentLoaded', () => {
+  // screen size to set the width according to current size of the screen
+  const mainContainer = document.querySelector('.main-container');
+
+  function updateScreenSize() {
+    let widthContainer = window.innerWidth;
+    mainContainer.style.maxWidth = `${widthContainer}px`;
+  }
+  window.addEventListener('resize', updateScreenSize);
+  updateScreenSize();
+});
+
+// dashboard
 document.addEventListener('DOMContentLoaded', () => {
   //for drop down
   const button = document.querySelector(".user-icon");
@@ -93,28 +107,62 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // //table reponsive
-  // const tableContainer = document.querySelector('.table-container');
+  // chart
+  const ctx = document.getElementById('myChart').getContext('2d');
+  const data = {
+    labels: ['January 2024', 'February 2024', 'March 2024', 'April 2024', 'May 2024', 'June 2024', 'July 2024', 'August 2024', 'September 2024', 'October 2024', 'November 2024', 'December 2024'],
+    datasets: [
+      {
+        label: 'Category1',
+        data: [5000, 300, 200, 300, 200, 300, 200, 1000, 2500, 10000, 10000, 10000],
+        backgroundColor: '#22326e'
+      }
+    ]
+  };
 
-  // function updateContainerWidth() {
-  //   const screenWidth = window.innerWidth;
-  //   let containerWidth;
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      title: {
+        display: false,
+        text: 'Monthly Data'
+      },
+      legend: {
+        display: false,
+        position: 'top'
+      }
+    },
+    scales: {
+      x: {
+        stacked: true,
+      },
+      y: {
+        stacked: true
+      }
+    }
+  };
 
-  //   if (screenWidth >= 1920) {
-  //     containerWidth = 1660;
-  //   } else if (screenWidth <= 1536) {
-  //     containerWidth = 1255;
-  //   } else {
-  //     containerWidth = screenWidth * 0.85;
-  //   }
+  // Create the chart
+  let myChart = new Chart(ctx, {
+    type: 'bar',
+    data: data,
+    options: options
+  });
 
-  //   tableContainer.style.width = `${containerWidth}px`;
-  // }
+  // Update the chart on resize of screen
+  window.addEventListener('resize', () => {
+    myChart.destroy();
+    myChart = new Chart(ctx, {
+      type: 'bar',
+      data: data,
+      options: options
+    });
+  });
+});
 
-  // window.addEventListener('resize', updateContainerWidth);
-  // updateContainerWidth();
-
-
+// table
+document.addEventListener('DOMContentLoaded', () => {
   //for dropdown status color
   const selectElements = document.querySelectorAll('.booking-status');
 
@@ -142,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
     selectElement.dispatchEvent(new Event('change'));
   });
 
-  // another drop down for booking ref no
+  // another drop down for booking ref no that will direct to payment or penalty
   const pTags = document.querySelectorAll('td.booking-no p');
 
   pTags.forEach(pTag => {
@@ -177,116 +225,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-});
-
-
-//for room selection
-document.addEventListener('DOMContentLoaded', () => {
-  const radios = document.querySelectorAll('input[type="radio"][name="room-selection"]');
-  const nextButton = document.querySelector('.room-next');
-  let errorContainer = document.querySelectorAll('.message-alert');
-  const errorMessage = document.querySelector('.alert-message');
-
-  let previouslySelectedRoom = null;
-
-  radios.forEach((radio) => {
-    radio.addEventListener('change', (event) => {
-      // Get the parent element with class "room"
-      const room = event.target.parentNode;
-
-      // Reset styles of previously selected room
-      if (previouslySelectedRoom) {
-        previouslySelectedRoom.style.backgroundColor = 'var(--white)'; // reset background color
-        previouslySelectedRoom.querySelectorAll('.pax-number').forEach((element) => {
-          element.style.color = 'black'; // reset font color
-        });
-        previouslySelectedRoom.querySelectorAll('.room-price').forEach((element) => {
-          element.style.color = 'var(--blue-1)'; // reset font color
-        });
-        previouslySelectedRoom.querySelectorAll('.room-info').forEach((element) => {
-          element.style.backgroundColor = 'var(--blue-1)'; // reset background color
-          element.style.color = 'var(--white)'; // reset font color
-        });
-      }
-
-      // Add the background color to the selected.room element
-      room.style.backgroundColor = 'var(--blue-1)'; // set background color
-      room.querySelectorAll('.pax-number').forEach((element) => {
-        element.style.color = 'var(--white)'; // set font color
-      });
-      room.querySelectorAll('.room-price').forEach((element) => {
-        element.style.color = 'var(--white)'; // set font color
-      });
-      room.querySelectorAll('.room-info').forEach((element) => {
-        element.style.backgroundColor = 'var(--white)'; // set background color
-        element.style.color = 'var(--blue-1)'; // set font color
-      });
-
-      // Update previouslySelectedRoom
-      previouslySelectedRoom = room;
-
-      // // Enable next button
-      // nextButton.disabled = false;
-      // nextButton.style.backgroundColor = '';
-      // errorContainer.forEach((element) => {
-      //   element.style.display = 'none';
-      // });
-    });
-  });
-
-  // Check if any radio is selected on page load
-  if (!Array.prototype.some.call(radios, (radio) => radio.checked)) {
-    nextButton.disabled = true;
-    nextButton.style.backgroundColor = 'gray';
-  }
-
-  // Add an event listener to check if any radio is selected
-  radios.forEach((radio) => {
-    radio.addEventListener('click', () => {
-      if (!Array.prototype.some.call(radios, (radio) => radio.checked)) {
-        nextButton.disabled = true;
-        nextButton.style.backgroundColor = 'gray';
-        errorMessage.forEach((element) => {
-          element.style.display = 'block';
-        });
-      } else {
-        nextButton.disabled = false;
-        nextButton.style.backgroundColor = 'var(--blue-1)';
-        nextButton.style.cursor = 'pointer';
-        errorMessage.forEach((element) => {
-          element.style.display = 'none';
-        });
-        nextButton.onclick = function () {
-          window.location.href = '2_DateSelection.html';
-        };
-      }
-    });
-  });
-
-  // Add an event listener to the next button to display the error message
-  nextButton.addEventListener('click', () => {
-    if (!Array.prototype.some.call(radios, (radio) => radio.checked)) {
-      errorMessage.textContent = "Select a room first before proceeding";
-      errorContainer.forEach((element) => {
-        element.style.display = 'flex';
-      });
-    } else {
-      window.location.href = '2_DateSelection.html';
-    }
-  });
-
-  // Add an event listener to the OK button to hide the error message
-  document.querySelectorAll('.ok-button').forEach((button) => {
-    button.addEventListener('click', () => {
-      button.parentNode.parentNode.style.display = 'none';
-    });
-  });
-});
-
-
-//for viewing room content and closing it etc.
-//all about the room content
-document.addEventListener("DOMContentLoaded", function () {
+  //for viewing room content and closing it etc.
+  //all about the room content
   const contentContainer = document.querySelectorAll(".room-info");
   const imageContainer = document.querySelectorAll(".image");
   const closeButtons = document.querySelectorAll(".button-close");
@@ -328,6 +268,160 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+//for room selection
+document.addEventListener('DOMContentLoaded', () => {
+  const checks = document.querySelectorAll('input[type="checkbox"][name="room-selection"]');
+  const nextButton = document.querySelector('.room-next');
+  let errorContainer = document.querySelectorAll('.message-alert');
+  const errorMessage = document.querySelector('.alert-message');
+
+  checks.forEach((check) => {
+    check.addEventListener('change', (event) => {
+      // Get the parent element with class "room"
+      const room = event.target.parentNode;
+
+      if (event.target.checked) {
+        // Add the background color to the selected room element
+        room.style.backgroundColor = 'var(--blue-1)';
+        room.style.backgroundBlendMode = 'color-burn';
+        room.querySelectorAll('.pax-number').forEach((element) => {
+          element.style.color = 'var(--white)';
+        });
+        room.querySelectorAll('.room-price').forEach((element) => {
+          element.style.color = 'var(--white)';
+        });
+        room.querySelectorAll('.room-type').forEach((element) => {
+          element.style.color = 'var(--white)';
+        });
+        room.querySelectorAll('p.room-type').forEach((element) => {
+          const beforeStyle = getComputedStyle(element, '::before');
+          const afterStyle = getComputedStyle(element, '::after');
+
+          element.style.setProperty('--before-background-color', 'var(--white)');
+          element.style.setProperty('--after-background-color', 'var(--white)');
+        });
+        room.querySelectorAll('.room-info').forEach((element) => {
+          element.style.backgroundColor = 'var(--white)'; // set background color
+          element.style.color = 'var(--blue-1)';
+        });
+      } else {
+        // Reset styles of deselected room
+        room.style.backgroundColor = 'var(--white)';
+        room.style.backgroundBlendMode = '';
+        room.querySelectorAll('.pax-number').forEach((element) => {
+          element.style.color = 'var(--blue-1)';
+        });
+        room.querySelectorAll('.room-price').forEach((element) => {
+          element.style.color = 'var(--blue-1)';
+        });
+        room.querySelectorAll('.room-type').forEach((element) => {
+          element.style.color = 'var(--blue-1)';
+        });
+        room.querySelectorAll('.room-info').forEach((element) => {
+          element.style.backgroundColor = 'var(--blue-1)';
+          element.style.color = 'var(--white)';
+        });
+        room.querySelectorAll('p.room-type').forEach((element) => {
+          const beforeStyle = getComputedStyle(element, '::before');
+          const afterStyle = getComputedStyle(element, '::after');
+
+          element.style.setProperty('--before-background-color', 'var(--blue-1)');
+          element.style.setProperty('--after-background-color', 'var(--blue-1)');
+        });
+      }
+
+      // Check if any checkbox is selected
+      if (Array.prototype.some.call(checks, (check) => check.checked)) {
+        nextButton.disabled = false;
+        nextButton.style.backgroundColor = 'var(--blue-1)';
+        nextButton.style.cursor = 'pointer';
+        errorContainer.forEach((element) => {
+          element.style.display = 'none';
+        });
+      } else {
+        nextButton.disabled = true;
+        nextButton.style.backgroundColor = 'gray';
+        errorMessage.forEach((element) => {
+          element.style.display = 'block';
+        });
+      }
+    });
+  });
+
+  // Check if any checkbox is selected on page load
+  if (!Array.prototype.some.call(checks, (check) => check.checked)) {
+    nextButton.disabled = true;
+    nextButton.style.backgroundColor = 'gray';
+  }
+
+  // Add an event listener to the next button to display the error message
+  nextButton.addEventListener('click', () => {
+    if (!Array.prototype.some.call(checks, (check) => check.checked)) {
+      errorMessage.textContent = "Select a room first before proceeding";
+      errorContainer.forEach((element) => {
+        element.style.display = 'flex';
+      });
+    } else {
+      window.location.href = '3_BookingInfo.html';
+    }
+  });
+
+  // Add an event listener to the OK button to hide the error message
+  document.querySelectorAll('.ok-button').forEach((button) => {
+    button.addEventListener('click', () => {
+      button.parentNode.parentNode.style.display = 'none';
+    });
+  });
+});
+
+
+// collapsing side navigation
+document.addEventListener("DOMContentLoaded", function () {
+  const navButtons = document.querySelectorAll('.navsize-button');
+  const sideNavs = document.querySelectorAll('.side-nav');
+  const contentContainer = document.querySelectorAll('.container');
+  let isCollapsed = false;
+
+  navButtons.forEach(button => {
+    button.addEventListener("click", function () {
+      isCollapsed = !isCollapsed;
+
+      const aTags = document.querySelectorAll(".navigation a");
+      const aActive = document.querySelectorAll(".active-nav");
+      const pTags = document.querySelectorAll(".navigation a p");
+      const sideBanners = document.querySelectorAll(".side-banner");
+
+      if (isCollapsed) {
+        sideNavs.forEach(sideNav => sideNav.style.width = "5rem");
+        contentContainer.forEach(contentContainer => contentContainer.style.maxWidth = "calc(100% - 5rem)");
+        navButtons.forEach(btn => btn.style.transform = "rotatey(-180deg)");
+        navButtons.forEach(btn => btn.style.alignSelf = "center");
+        pTags.forEach(p => p.style.display = "none");
+        sideBanners.forEach(sideBanner => sideBanner.children[1].style.display = "none");
+        aTags.forEach(a => a.style.justifyContent = "center");
+        aTags.forEach(a => a.style.padding = "1rem 0.325rem");
+        // aTags.forEach(a => a.style.backgroundColor = "var(--white)");
+        aActive.forEach(a => a.style.borderRight = "none");
+        aActive.forEach(a => a.style.backgroundColor = "var(--blue-1)");
+        aActive.forEach(a => a.style.color = "var(--white)");
+
+      } else {
+        sideNavs.forEach(sideNav => sideNav.style.width = "13rem");
+        contentContainer.forEach(contentContainer => contentContainer.style.maxWidth = "calc(100% - 13rem)");
+        navButtons.forEach(btn => btn.style.transform = "rotatey(0deg)");
+        navButtons.forEach(btn => btn.style.alignSelf = "");
+        pTags.forEach(p => p.style.display = "block");
+        sideBanners.forEach(sideBanner => sideBanner.children[1].style.display = "block");
+        aTags.forEach(a => a.style.justifyContent = "start");
+        aTags.forEach(a => a.style.backgroundColor = "");
+        aTags.forEach(a => a.style.padding = "calc(0.9rem + (1vw - 1rem) / 2)");
+        aActive.forEach(a => a.style.borderRight = "5px solid var(--blue-1)");
+        aActive.forEach(a => a.style.backgroundColor = "var(--blue-2)");
+        aActive.forEach(a => a.style.color = "var(--blue-1)");
+      }
+    });
+  });
+});
 
 // for calendar
 document.addEventListener("DOMContentLoaded", function () {
@@ -387,10 +481,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (currentDate < today) {
         classList += " day-over"; // Add "day-over" class if the day is in the past
-      }
-
-      if (currentDate < currentDate.getTime()) {
-        classList += "day-over"; // Add "day-over" class if the day is in the past
       }
 
       if (selectedStartDate && selectedStartDate.getTime() === currentDate.getTime()) {
@@ -487,6 +577,7 @@ document.addEventListener("DOMContentLoaded", function () {
           selectedStartDate = clickedDate;
           selectedEndDate = null;
         }
+
         document.getElementById("startDate").value = shortenDate(selectedStartDate);
         document.getElementById("endDate").value = shortenDate(selectedEndDate);
 
@@ -593,81 +684,292 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     } else {
       // Submit the form or perform the desired action
+      window.location.href = '2_RoomSelection.html';
+    }
+  });
+
+});
+
+
+// booking form
+document.addEventListener("DOMContentLoaded", function () {
+  // Get the radio input and checkbox container
+  const checkboxContainer = document.querySelector('.checkbox-container');
+
+  document.querySelectorAll('.amenities-option input').forEach((input) => {
+    input.addEventListener('change', () => {
+      checkboxContainer.style.display = input.id === 'yesAmenities' ? 'flex' : 'none';
+    });
+  });
+
+  const addButton = document.getElementById("add-id");
+  const inputsContainer = document.getElementById("input-container");
+  const totalInputs = document.getElementById("total-counts");
+
+  let inputCount = 0;
+
+  addButton.addEventListener("click", function () {
+    inputCount++;
+    const inputContainer = document.createElement("div");
+    inputContainer.classList.add("id-container");
+
+    const idInput = document.createElement("input");
+    idInput.setAttribute("type", "text");
+    idInput.classList.add("id-input");
+    idInput.setAttribute("placeholder", "ID Number");
+    inputContainer.appendChild(idInput);
+
+    const selectInput = document.createElement("select");
+    const options = [
+      { value: "idPWD", text: "PWD" },
+      { value: "idSenior", text: "Senior" }
+    ];
+    options.forEach(option => {
+      const optionElement = document.createElement("option");
+      optionElement.value = option.value;
+      optionElement.textContent = option.text;
+      selectInput.appendChild(optionElement);
+    });
+    inputContainer.appendChild(selectInput);
+
+    const removeButton = document.createElement("button");
+    removeButton.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+    removeButton.classList.add("id-remove");
+    removeButton.addEventListener("click", function () {
+      inputContainer.remove();
+      inputCount--;
+      totalInputs.textContent = inputCount;
+    });
+    inputContainer.appendChild(removeButton);
+
+    inputsContainer.appendChild(inputContainer);
+    totalInputs.textContent = inputCount;
+  });
+
+  const messageAlert = document.querySelector('.message-alert');
+  const messageNote = document.querySelector('.alert-message');
+  const okButton = document.querySelector('.ok-button');
+  const inputField = document.querySelector('.add-pax input');
+
+  okButton.addEventListener("click", () => {
+    messageAlert.style.display = "none";
+  });
+
+  inputField.value = 0;
+
+  inputField.addEventListener('input', function () {
+    const inputValue = this.value;
+    if (inputValue.startsWith('0') && inputValue.length > 1) {
+      this.value = inputValue.substring(1);
+    }
+    const numericValue = parseInt(this.value);
+    if (numericValue < 0 || numericValue > 2) {
+      this.value = 0;
+      messageNote.textContent = "max of additional 2 pax only";
+      messageAlert.style.display = "flex";
+      inputField.style.outline = "1px solid red";
+    } else {
+      inputField.style.outline = "none";
     }
   });
 });
 
 document.addEventListener("DOMContentLoaded", function () {
-  const tableContainer = document.querySelector('.table-container');
-  const navSizeButtons = document.querySelectorAll(".navsize-button");
-  const sideNavs = document.querySelectorAll(".side-nav");
-  let isCollapsed = false;
-  updateContainerWidth()
+  const viewDetails = document.querySelectorAll('.view-details');
+  const detailsAmount = document.querySelector('.details-amount');
+  const closeDetails = document.querySelectorAll('.details-amount .button-close');
 
-  function updateContainerWidth() {
-    const screenWidth = window.innerWidth;
-    let containerWidth;
-
-    if (screenWidth >= 1920) {
-      if(!isCollapsed){
-        containerWidth = 1660 + 150;
-      }else{
-        containerWidth = 1660;
-      }
-    } else if (screenWidth <= 1536) {
-      if(!isCollapsed){
-        containerWidth = 1405 + 150;
-      }else{
-        containerWidth = 1660;
-     }
-    } else {
-      containerWidth = screenWidth * 0.85;
-    }
-
-    tableContainer.style.width = `${containerWidth}px`;
-  }
-
-  navSizeButtons.forEach(button => {
-    button.addEventListener("click", function () {
-      console.log("Button clicked");
-
-      const aTags = document.querySelectorAll(".navigation a");
-      const aActive = document.querySelectorAll(".active-nav");
-      const pTags = document.querySelectorAll(".navigation a p");
-      const sideBanners = document.querySelectorAll(".side-banner");
-
-      if (!isCollapsed) {
-        navSizeButtons.forEach(btn => btn.style.transform = "rotatey(-180deg)");
-        pTags.forEach(p => p.style.display = "none");
-        sideBanners.forEach(sideBanner => sideBanner.children[1].style.display = "none");
-        sideNavs.forEach(sideNav => sideNav.style.flexBasis = "80px");
-        aTags.forEach(a => a.style.justifyContent = "center");
-        aTags.forEach(a => a.style.padding = "1rem 0.625rem");
-        aTags.forEach(a => a.style.backgroundColor = "var(--blue-2)");
-        aActive.forEach(a => a.style.borderRight = "none");
-        aActive.forEach(a => a.style.backgroundColor = "var(--blue-1)");
-        aActive.forEach(a => a.style.color = "var(--white)");
-      } else {
-        navSizeButtons.forEach(btn => btn.style.transform = "rotatey(0deg)");
-        pTags.forEach(p => p.style.display = "block");
-        sideBanners.forEach(sideBanner => sideBanner.children[1].style.display = "block");
-        sideNavs.forEach(sideNav => sideNav.style.flexBasis = "230px"); // restore
-        aTags.forEach(a => a.style.justifyContent = "start");
-        aTags.forEach(a => a.style.backgroundColor = "");
-        aActive.forEach(a => a.style.borderRight = "5px solid var(--blue-1)");
-        aActive.forEach(a => a.style.backgroundColor = "var(--blue-2)");
-        aActive.forEach(a => a.style.color = "var(--blue-1)");
-      }
-
-      updateContainerWidth();
-
-      isCollapsed = !isCollapsed;
-      localStorage.setItem("isCollapsed", JSON.stringify(isCollapsed));
+  viewDetails.forEach(button => {
+    button.addEventListener("click", function (event) {
+      event.stopPropagation();
+      detailsAmount.style.display = "flex";
+      detailsAmount.style.animationName = "fadeIn";
+      detailsAmount.style.animationDuration = "300ms";
+      detailsAmount.scrollTop = 0;
     });
   });
 
-  // Call updateContainerWidth when the window is resized
-  window.addEventListener("resize", function () {
-    updateContainerWidth();
+  closeDetails.forEach(button => {
+    button.addEventListener("click", function (event) {
+      detailsAmount.style.display = "none";
+    });
   });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  const messageAlerts = document.querySelectorAll('.message-alert');
+  const buttonConfirms = document.querySelectorAll('.confirm-button');
+  const messageTexts = document.querySelectorAll('.alert-message');
+
+  buttonConfirms.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      messageTexts.forEach((text) => {
+        text.textContent = "Confirm this booking?";
+      });
+      messageAlerts.forEach((alert) => {
+        alert.style.display = 'flex';
+      });
+    });
+  });
+
+  document.querySelectorAll('.no-button').forEach((button) => {
+    button.addEventListener('click', () => {
+      messageAlerts.forEach((alert) => {
+        alert.style.display = 'none';
+      });
+    });
+  });
+
+  document.querySelectorAll('.yes-button').forEach((button) => {
+    button.addEventListener('click', () => {
+      messageAlerts.forEach((alert) => {
+        window.location.href = '5_BookingConfirmed.html';
+      });
+    });
+  });
+
+  const checkmark = document.querySelector('.checkmark');
+
+  checkmark.addEventListener('click', () => {
+    checkmark.classList.add('animate');
+    setTimeout(() => {
+      checkmark.classList.remove('animate');
+    }, 500);
+  });
+});
+
+
+//new
+document.addEventListener("DOMContentLoaded", function () {
+  const imageInput = document.getElementById('image-input');
+  const imagePreview = document.getElementById('image-preview');
+
+  imageInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const imageDataUrl = reader.result;
+      imagePreview.src = imageDataUrl;
+    };
+
+    reader.readAsDataURL(file);
+  });
+
+  imageInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return; // no file selected
+    if (!file.type.match('image.*')) {
+      alert('Please select an image file');
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const imageDataUrl = reader.result;
+      imagePreview.src = imageDataUrl;
+    };
+
+    reader.readAsDataURL(file);
+  });
+
+});
+
+//pop up for account
+
+document.addEventListener("DOMContentLoaded", function () {
+  const popupImageButton = document.querySelectorAll('.image-pop-up');
+  const popupNameButton = document.querySelectorAll('.name-pop-up');
+  const popupUsernameButton = document.querySelectorAll('.username-pop-up');
+  const popupEmailButton = document.querySelectorAll('.email-pop-up');
+  const popupPasswordButton = document.querySelectorAll('.password-pop-up');
+  const popupPasswordTwoButton = document.querySelectorAll('.pass-proceed');
+  const closePop = document.querySelectorAll('.change-cancel, .pop-close');
+  const updateSubmit = document.querySelectorAll('.change-save:not(.password)');
+
+  closePop.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      btn.closest('.pop-up-container').style.display = 'none';
+    });
+  });
+
+  updateSubmit.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      btn.closest('.pop-up-container').style.display = 'none';
+      document.querySelector('.pop-up-updated').style.display = 'flex';
+      document.querySelector('.pop-updated').style.animationName = 'zoomIn';
+  
+      // reseting the check animation
+      const lordIcon = document.querySelector('lord-icon');
+      const newLordIcon = document.createElement('lord-icon');
+      newLordIcon.src = 'https://cdn.lordicon.com/oqdmuxru.json';
+      newLordIcon.trigger = 'in';
+      newLordIcon.state = 'morph-check-in-1';
+  
+      lordIcon.replaceWith(newLordIcon);
+    });
+  });
+
+  popupImageButton.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelector('.pop-up-image').style.display = 'flex';
+      document.querySelector('.pop-image').style.animationName = 'zoomIn';
+    });
+  });
+
+  popupNameButton.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelector('.pop-up-name').style.display = 'flex';
+      document.querySelector('.pop-name').style.animationName = 'zoomIn';
+    });
+  });
+
+  popupUsernameButton.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelector('.pop-up-username').style.display = 'flex';
+      document.querySelector('.pop-username').style.animationName = 'zoomIn';
+    });
+  });
+
+  popupEmailButton.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelector('.pop-up-email').style.display = 'flex';
+      document.querySelector('.pop-email').style.animationName = 'zoomIn';
+    });
+  });
+
+  popupPasswordButton.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelector('.pop-up-password-one').style.display = 'flex';
+      document.querySelector('.pop-password-one').style.animationName = 'zoomIn';
+    });
+  });
+
+  popupPasswordTwoButton.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelector('.pop-up-password-one').style.display = 'none';
+      document.querySelector('.pop-up-password-two').style.display = 'flex';
+      document.querySelector('.pop-password-two').style.animationName = 'zoomIn';
+    });
+  });
+
+  // password visibility
+  const passwordInputs = document.querySelectorAll('input[type="password"]');
+  const eyeIcons = document.querySelectorAll('.password-visibility');
+
+  eyeIcons.forEach((icon, index) => {
+    icon.addEventListener('click', () => {
+      // Toggle password visibility
+      const passwordInput = passwordInputs[index];
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+      } else {
+        passwordInput.type = 'password';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+      }
+    });
+  });
+
 });
